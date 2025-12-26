@@ -2,12 +2,14 @@
 
 A mini AI support agent for live chat widget built with Node.js, TypeScript, and Svelte.
 
+**🔗 GitHub Repository**: https://github.com/Sai6522/Spur-AI-Chat-Support
+
 ## Quick Start
 
 1. **Clone and setup:**
 ```bash
-git clone <your-repo-url>
-cd spur-chat-agent
+git clone https://github.com/Sai6522/Spur-AI-Chat-Support.git
+cd Spur-AI-Chat-Support
 npm install
 cp .env.example .env
 ```
