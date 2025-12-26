@@ -1,25 +1,16 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 
-const STORE_KNOWLEDGE = `
-Store Information:
-- Shipping: Free shipping on orders over $50. Standard shipping takes 3-5 business days.
-- Returns: 30-day return policy. Items must be in original condition with tags attached.
-- Support Hours: Monday-Friday 9AM-6PM EST
-- Payment: We accept all major credit cards and PayPal
-- Location: Based in New York, USA
-- Specialties: Quality products with excellent customer service
-`;
+const STORE_RESPONSES = {
+  'store hours': 'Our store hours are Monday-Friday 9AM-6PM EST. We\'re here to help during those times!',
+  'shipping': 'Yes! We offer free shipping on all orders over $50. Standard shipping takes 3-5 business days.',
+  'return': 'We have a 30-day return policy. Items must be in original condition with tags attached.',
+  'payment': 'We accept all major credit cards and PayPal for your convenience.',
+  'support': 'Our customer support is available Monday-Friday 9AM-6PM EST. You can reach us anytime!',
+  'location': 'We\'re based in New York, USA and ship nationwide.',
+  'help': 'I\'m here to help! You can ask me about our shipping, returns, store hours, or any other questions.'
+};
 
-const SYSTEM_PROMPT = `You are a helpful customer support agent for an e-commerce store. 
-Answer questions clearly and concisely. Be friendly and professional.
-Use the store information provided to answer questions accurately.
-
-${STORE_KNOWLEDGE}
-
-If you don't know something specific, politely say so and offer to connect them with a human agent.
-Keep responses under 200 words and always complete your sentences.`;
-
-// Simple in-memory storage (resets on each cold start)
+// Simple in-memory storage
 const conversations = new Map();
 const messages = new Map();
 
@@ -48,12 +39,30 @@ function addMessage(conversationId: string, sender: 'user' | 'ai', text: string)
   return message;
 }
 
-function getMessages(conversationId: string): Message[] {
-  return messages.get(conversationId) || [];
+function generateResponse(userMessage: string): string {
+  const message = userMessage.toLowerCase();
+  
+  // Check for keywords and return appropriate responses
+  for (const [keyword, response] of Object.entries(STORE_RESPONSES)) {
+    if (message.includes(keyword)) {
+      return response;
+    }
+  }
+  
+  // Default responses for common greetings
+  if (message.includes('hello') || message.includes('hi') || message.includes('hey')) {
+    return 'Hello! Welcome to our store. How can I help you today? You can ask about shipping, returns, store hours, or anything else!';
+  }
+  
+  if (message.includes('thank')) {
+    return 'You\'re welcome! Is there anything else I can help you with today?';
+  }
+  
+  // Default helpful response
+  return 'I\'d be happy to help! You can ask me about our shipping policy, return policy, store hours, payment methods, or any other questions about our store.';
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // Enable CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -86,41 +95,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Add user message
     addMessage(conversationId, 'user', message.trim());
 
-    // Get conversation history for context
-    const history = getMessages(conversationId);
-    let conversationContext = SYSTEM_PROMPT + '\n\nConversation history:\n';
-    history.slice(-5).forEach(msg => {
-      conversationContext += `${msg.sender === 'user' ? 'Customer' : 'Agent'}: ${msg.text}\n`;
-    });
-    conversationContext += `Customer: ${message.trim()}\nAgent:`;
-
-    // Use Puter.js AI API (serverless, no API key needed)
-    const puterResponse = await fetch('https://api.puter.com/v1/ai/chat', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4.1-nano',
-        messages: [
-          { role: 'system', content: SYSTEM_PROMPT },
-          { role: 'user', content: message.trim() }
-        ]
-      })
-    });
-
-    if (!puterResponse.ok) {
-      throw new Error(`Puter API error: ${puterResponse.status}`);
-    }
-
-    const puterData = await puterResponse.json() as any;
-    const reply = puterData.choices?.[0]?.message?.content || puterData.response || 'I apologize, but I could not generate a response.';
+    // Generate AI response using keyword matching
+    const reply = generateResponse(message.trim());
 
     // Add AI message
-    addMessage(conversationId, 'ai', reply.trim());
+    addMessage(conversationId, 'ai', reply);
 
     return res.json({
-      reply: reply.trim(),
+      reply: reply,
       sessionId: conversationId
     });
 
