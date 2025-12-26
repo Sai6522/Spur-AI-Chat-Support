@@ -88,7 +88,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     addMessage(conversationId, 'user', message.trim());
 
     const API_KEY = process.env.GOOGLE_AI_API_KEY;
+    console.log('API Key exists:', !!API_KEY);
+    console.log('API Key length:', API_KEY?.length || 0);
+    
     if (!API_KEY) {
+      console.error('No API key found');
       return res.status(500).json({ error: 'AI service not configured' });
     }
 
@@ -110,8 +114,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     conversationContext += `Customer: ${message.trim()}\nAgent:`;
     
     const result = await model.generateContent(conversationContext);
+    console.log('AI API call successful');
     const response = await result.response;
     const reply = response.text();
+    console.log('Reply received:', reply?.substring(0, 50) + '...');
 
     if (!reply) {
       return res.status(500).json({ error: 'No response from AI' });
