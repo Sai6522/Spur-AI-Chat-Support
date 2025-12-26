@@ -28,23 +28,30 @@ RESPONSE=$(curl -s -X POST \
   -d '{
     "type": "web_service",
     "name": "spur-ai-chat-support",
+    "ownerId": "tea-cspq6bt6l47c73fep8og",
     "repo": "https://github.com/Sai6522/Spur-AI-Chat-Support",
     "branch": "main",
-    "buildCommand": "./render-build.sh",
-    "startCommand": "npm start",
-    "plan": "free",
-    "env": "node",
-    "envVars": [
-      {
-        "key": "NODE_ENV",
-        "value": "production"
+    "serviceDetails": {
+      "env": "node",
+      "plan": "free",
+      "buildCommand": "./render-build.sh",
+      "startCommand": "npm start",
+      "healthCheckPath": "/api/health",
+      "envSpecificDetails": {
+        "buildCommand": "./render-build.sh",
+        "startCommand": "npm start"
       },
-      {
-        "key": "GOOGLE_AI_API_KEY", 
-        "value": "'$GOOGLE_AI_API_KEY'"
-      }
-    ],
-    "healthCheckPath": "/api/health"
+      "envVars": [
+        {
+          "key": "NODE_ENV",
+          "value": "production"
+        },
+        {
+          "key": "GOOGLE_AI_API_KEY", 
+          "value": "'$GOOGLE_AI_API_KEY'"
+        }
+      ]
+    }
   }')
 
 echo "Response: $RESPONSE"
