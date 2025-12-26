@@ -16,6 +16,10 @@
       "dest": "/api/health.ts"
     },
     {
+      "src": "/api/debug",
+      "dest": "/api/debug.ts"
+    },
+    {
       "src": "/api/chat/message",
       "dest": "/api/chat/message.ts"
     },
