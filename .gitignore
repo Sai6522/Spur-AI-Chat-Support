@@ -6,3 +6,4 @@ dist/
 database.sqlite
 frontend/dist/
 frontend/node_modules/
+.vercel
