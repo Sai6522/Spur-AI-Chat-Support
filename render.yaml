@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: spur-ai-chat-support
+    env: node
+    plan: free
+    buildCommand: ./render-build.sh
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: GOOGLE_AI_API_KEY
+        sync: false
+    healthCheckPath: /api/health
