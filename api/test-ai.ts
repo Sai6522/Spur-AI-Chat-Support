@@ -5,22 +5,33 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   
   try {
-    const API_KEY = process.env.GOOGLE_AI_API_KEY;
-    if (!API_KEY) {
-      return res.json({ error: 'No API key' });
+    // Test simple Puter.js API call
+    const response = await fetch('https://api.puter.com/v1/ai/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4.1-nano',
+        messages: [
+          { role: 'user', content: 'Say hello in one sentence' }
+        ]
+      })
+    });
+
+    if (!response.ok) {
+      return res.json({ 
+        error: `Puter API error: ${response.status}`,
+        status: response.status
+      });
     }
 
-    const genAI = new GoogleGenerativeAI(API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-    
-    const result = await model.generateContent("Say hello");
-    const response = await result.response;
-    const text = response.text();
+    const data = await response.json();
     
     return res.json({ 
       success: true, 
-      response: text,
-      model: "gemini-2.5-flash"
+      response: data,
+      model: "gpt-4.1-nano via Puter.js"
     });
     
   } catch (error: any) {
