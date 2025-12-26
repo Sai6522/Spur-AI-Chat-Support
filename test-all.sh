@@ -9,8 +9,8 @@ if [ ! -f .env ]; then
     exit 1
 fi
 
-if ! grep -q "SAMBANOVA_API_KEY=" .env; then
-    echo "❌ SAMBANOVA_API_KEY not found in .env"
+if ! grep -q "GOOGLE_AI_API_KEY=" .env; then
+    echo "❌ GOOGLE_AI_API_KEY not found in .env"
     exit 1
 fi
 
@@ -102,7 +102,7 @@ echo ""
 echo "🎉 All tests passed! The Spur AI Chat Agent is working perfectly."
 echo ""
 echo "🚀 Ready for deployment!"
-echo "   - SambaNova API integration: ✅"
+echo "   - Google AI integration: ✅"
 echo "   - Database persistence: ✅"
 echo "   - Error handling: ✅"
 echo "   - Frontend serving: ✅"
