@@ -69,7 +69,7 @@ npm start
 - **Backend**: Node.js + TypeScript + Express
 - **Frontend**: Svelte + Vite
 - **Database**: SQLite (for simplicity)
-- **LLM**: Google Gemini 2.5 Flash
+- **LLM**: Puter.js (GPT-4.1 Nano) - No API keys needed!
 
 ## API Endpoints
 
