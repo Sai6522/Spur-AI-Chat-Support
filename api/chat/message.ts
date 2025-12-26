@@ -18,7 +18,7 @@ Use the store information provided to answer questions accurately.
 ${STORE_KNOWLEDGE}
 
 If you don't know something specific, politely say so and offer to connect them with a human agent.
-Keep responses under 150 words.`;
+Keep responses under 200 words and always complete your sentences.`;
 
 // Simple in-memory storage (resets on each cold start)
 const conversations = new Map();
@@ -96,7 +96,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const model = genAI.getGenerativeModel({ 
       model: "gemini-2.5-flash",
       generationConfig: {
-        maxOutputTokens: 150,
+        maxOutputTokens: 300,
         temperature: 0.7,
       }
     });
