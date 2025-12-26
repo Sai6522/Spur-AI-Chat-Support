@@ -16,8 +16,8 @@
       "dest": "/api/health.ts"
     },
     {
-      "src": "/api/debug",
-      "dest": "/api/debug.ts"
+      "src": "/api/test-ai",
+      "dest": "/api/test-ai.ts"
     },
     {
       "src": "/api/chat/message",
