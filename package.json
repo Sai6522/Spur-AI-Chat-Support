@@ -11,7 +11,8 @@
     "build": "npm run build:backend && npm run build:frontend",
     "start": "node dist/server.js",
     "db:setup": "tsx src/scripts/setup-db.ts",
-    "postinstall": "cd frontend && npm install"
+    "postinstall": "cd frontend && npm install",
+    "render:build": "./render-build.sh"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

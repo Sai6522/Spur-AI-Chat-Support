@@ -1,0 +1,13 @@
+{
+  "name": "spur-ai-chat-support",
+  "version": "1.0.0",
+  "description": "AI Live Chat Agent for Spur take-home assignment",
+  "main": "dist/server.js",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "build": "./render-build.sh",
+    "start": "node dist/server.js"
+  }
+}
