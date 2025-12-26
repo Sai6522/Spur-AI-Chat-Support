@@ -20,6 +20,10 @@
       "dest": "/api/chat/message.ts"
     },
     {
+      "src": "/api/chat/history/(.*)",
+      "dest": "/api/chat/history/[sessionId].ts"
+    },
+    {
       "src": "/(.*)",
       "dest": "/frontend/dist/$1"
     }

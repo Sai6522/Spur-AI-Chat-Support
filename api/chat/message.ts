@@ -20,6 +20,39 @@ ${STORE_KNOWLEDGE}
 If you don't know something specific, politely say so and offer to connect them with a human agent.
 Keep responses under 150 words.`;
 
+// Simple in-memory storage (resets on each cold start)
+const conversations = new Map();
+const messages = new Map();
+
+interface Message {
+  id: number;
+  conversationId: string;
+  sender: 'user' | 'ai';
+  text: string;
+  timestamp: string;
+}
+
+function addMessage(conversationId: string, sender: 'user' | 'ai', text: string): Message {
+  const message: Message = {
+    id: Date.now() + Math.random(),
+    conversationId,
+    sender,
+    text,
+    timestamp: new Date().toISOString()
+  };
+  
+  if (!messages.has(conversationId)) {
+    messages.set(conversationId, []);
+  }
+  messages.get(conversationId).push(message);
+  
+  return message;
+}
+
+function getMessages(conversationId: string): Message[] {
+  return messages.get(conversationId) || [];
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -30,20 +63,29 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).end();
   }
 
-  if (req.method === 'GET') {
-    return res.json({ status: 'ok', timestamp: new Date().toISOString() });
-  }
-
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    const { message } = req.body;
+    const { message, sessionId } = req.body;
 
     if (!message || typeof message !== 'string' || message.trim().length === 0) {
       return res.status(400).json({ error: 'Message is required and must be a non-empty string' });
     }
+
+    const conversationId = sessionId || `conv-${Date.now()}`;
+    
+    // Create conversation if it doesn't exist
+    if (!conversations.has(conversationId)) {
+      conversations.set(conversationId, {
+        id: conversationId,
+        createdAt: new Date().toISOString()
+      });
+    }
+
+    // Add user message
+    addMessage(conversationId, 'user', message.trim());
 
     const API_KEY = process.env.GOOGLE_AI_API_KEY;
     if (!API_KEY) {
@@ -59,7 +101,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
     });
 
-    const conversationContext = SYSTEM_PROMPT + '\n\nCustomer: ' + message.trim() + '\nAgent:';
+    // Get conversation history for context
+    const history = getMessages(conversationId);
+    let conversationContext = SYSTEM_PROMPT + '\n\nConversation history:\n';
+    history.slice(-5).forEach(msg => {
+      conversationContext += `${msg.sender === 'user' ? 'Customer' : 'Agent'}: ${msg.text}\n`;
+    });
+    conversationContext += `Customer: ${message.trim()}\nAgent:`;
     
     const result = await model.generateContent(conversationContext);
     const response = await result.response;
@@ -69,9 +117,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(500).json({ error: 'No response from AI' });
     }
 
+    // Add AI message
+    addMessage(conversationId, 'ai', reply.trim());
+
     return res.json({
       reply: reply.trim(),
-      sessionId: Date.now().toString()
+      sessionId: conversationId
     });
 
   } catch (error: any) {
