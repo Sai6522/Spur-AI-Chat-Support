@@ -18,7 +18,7 @@ Use the store information provided to answer questions accurately.
 ${STORE_KNOWLEDGE}
 
 If you don't know something specific, politely say so and offer to connect them with a human agent.
-Keep responses under 150 words.`;
+Keep responses under 200 words and always complete your sentences.`;
 
 export interface ChatMessage {
   sender: 'user' | 'ai';
@@ -40,7 +40,7 @@ export async function generateReply(
     const model = genAI.getGenerativeModel({ 
       model: "gemini-2.5-flash",
       generationConfig: {
-        maxOutputTokens: 150,
+        maxOutputTokens: 300,
         temperature: 0.7,
       }
     });
