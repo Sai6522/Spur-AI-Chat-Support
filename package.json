@@ -11,6 +11,8 @@
     "build": "npm run build:backend && npm run build:frontend",
     "start": "node dist/server.js",
     "db:setup": "tsx src/scripts/setup-db.ts",
+    "db:migrate": "tsx src/scripts/migrate.ts",
+    "db:seed": "tsx src/scripts/seed.ts",
     "postinstall": "cd frontend && npm install",
     "render:build": "./render-build.sh"
   },

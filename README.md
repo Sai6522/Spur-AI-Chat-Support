@@ -22,6 +22,9 @@ GOOGLE_AI_API_KEY=your-google-ai-api-key-here
 3. **Initialize database:**
 ```bash
 npm run db:setup
+# Or for more control:
+npm run db:migrate  # Create tables
+npm run db:seed     # Add sample data
 ```
 
 4. **Start development servers:**
@@ -186,7 +189,9 @@ npm run dev:backend     # Start backend in development
 npm run dev:frontend    # Start frontend in development
 npm run build          # Build both frontend and backend
 npm run start          # Start production server
-npm run db:setup       # Initialize database
+npm run db:setup       # Initialize database (quick setup)
+npm run db:migrate     # Run database migrations
+npm run db:seed        # Seed database with sample data
 ./start.sh             # Build and start (convenience script)
 ```
 
