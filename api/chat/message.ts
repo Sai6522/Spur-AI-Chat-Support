@@ -113,7 +113,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       throw new Error(`Puter API error: ${puterResponse.status}`);
     }
 
-    const puterData = await puterResponse.json();
+    const puterData = await puterResponse.json() as any;
     const reply = puterData.choices?.[0]?.message?.content || puterData.response || 'I apologize, but I could not generate a response.';
 
     // Add AI message
